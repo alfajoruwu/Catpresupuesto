@@ -1,0 +1,88 @@
+.ac-screen {
+  padding-bottom: var(--space-5);
+}
+
+.ac-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+}
+
+.ac-total-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.ac-list {
+  margin-left: calc(-1 * var(--space-4));
+  margin-right: calc(-1 * var(--space-4));
+}
+
+.ac-section-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ac-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ac-actions .app-btn {
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 13px;
+  padding: var(--space-2);
+}
+
+.ac-archive-wrap {
+  margin-top: var(--space-4);
+}
+
+.ac-archive {
+  color: var(--expense);
+}
+
+.ac-muted {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ac-static {
+  font-size: 15px;
+  margin-bottom: var(--space-3);
+}
+
+.ac-error {
+  font-size: 14px;
+  color: var(--expense);
+}
+
+.ac-diff {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--space-3);
+}
+
+.ac-diff--pos {
+  color: var(--income);
+}
+
+.ac-diff--neg {
+  color: var(--expense);
+}
+
+.ac-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ac-sheet-body .app-field {
+  margin-bottom: 0;
+}
