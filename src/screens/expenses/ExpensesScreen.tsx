@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react';
-import { ScreenHeader } from '../../ui';
+import { MovementsScreen } from '../movements/MovementsScreen';
 
 export function ExpensesScreen(): ReactNode {
-  return (
-    <div>
-      <ScreenHeader title="Gastos" />
-    </div>
-  );
+  return <MovementsScreen kind="expense" />;
 }
