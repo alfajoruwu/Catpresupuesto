@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { api } from './api/client';
 import { ToastHost, toast } from './ui';
+import { invalidate } from './lib/data';
 import { SessionProvider } from './lib/session';
 import { navigate } from './lib/router';
 import { todayISO } from './lib/dates';
@@ -25,9 +26,14 @@ export function App(): ReactNode {
 
   useEffect(() => {
     if (status.state === 'ready' && status.user !== null) {
-      api.postDueRecurring({ today: todayISO() }).catch((e: unknown) => {
-        toast(e instanceof Error ? e.message : String(e), 'error');
-      });
+      api
+        .postDueRecurring({ today: todayISO() })
+        .then((created) => {
+          if (created > 0) invalidate();
+        })
+        .catch((e: unknown) => {
+          toast(e instanceof Error ? e.message : String(e), 'error');
+        });
     }
   }, [status]);
 

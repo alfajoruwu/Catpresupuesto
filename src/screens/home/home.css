@@ -1,0 +1,124 @@
+.hm-screen {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  padding-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.hm-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.hm-big {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--space-2);
+}
+
+.hm-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.hm-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hm-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.hm-muted {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+}
+
+.hm-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-weight: 600;
+}
+
+.hm-status-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.hm-status-icon--ok {
+  color: var(--income);
+}
+
+.hm-status-icon--ahead {
+  color: var(--warning);
+}
+
+.hm-status-icon--over {
+  color: var(--expense);
+}
+
+.hm-status--none {
+  justify-content: space-between;
+}
+
+.hm-tap {
+  cursor: pointer;
+}
+
+.hm-cat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  min-height: 44px;
+}
+
+.hm-cat__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hm-cat__pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.hm-bar-thin {
+  margin-top: var(--space-1);
+}
+
+.hm-bar-thin .app-progress {
+  height: 4px;
+}
+
+.hm-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.hm-signed {
+  display: inline-flex;
+  align-items: center;
+}
+
+.hm-signed--income {
+  color: var(--income);
+}

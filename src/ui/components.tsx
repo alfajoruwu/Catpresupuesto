@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { addMonths, monthLabel } from '../lib/dates';
@@ -205,6 +205,34 @@ export function Segmented<T>(props: {
   );
 }
 
+interface SheetStackEntry {
+  id: number;
+  close(): void;
+}
+
+declare global {
+  interface Window {
+    __sheetPopstateBound?: boolean;
+  }
+}
+
+const sheetStack: SheetStackEntry[] = [];
+let sheetSeq = 0;
+let skipPops = 0;
+
+if (typeof window !== 'undefined' && window.__sheetPopstateBound !== true) {
+  window.__sheetPopstateBound = true;
+  window.addEventListener('popstate', () => {
+    if (skipPops > 0) {
+      skipPops -= 1;
+      return;
+    }
+    const top = sheetStack.pop();
+    top?.close();
+  });
+}
+
+
 export function Sheet(props: {
   open: boolean;
   title: string;
@@ -213,18 +241,24 @@ export function Sheet(props: {
   footer?: ReactNode;
 }): ReactNode {
   const { open, title, onClose, children, footer } = props;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
-    history.pushState({ sheet: true }, '');
-    const onPop = (): void => {
-      onClose();
-    };
-    window.addEventListener('popstate', onPop);
+    sheetSeq += 1;
+    const id = sheetSeq;
+    sheetStack.push({ id, close: () => onCloseRef.current() });
+    history.pushState({ sheet: id }, '');
     return () => {
-      window.removeEventListener('popstate', onPop);
+      const index = sheetStack.findIndex((entry) => entry.id === id);
+      if (index >= 0) {
+        sheetStack.splice(index, 1);
+        skipPops += 1;
+        history.back();
+      }
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
