@@ -23,6 +23,12 @@ App de finanzas personales para Android, con Tauri 2. Importes enteros en pesos 
 Nota: tras init, añade el permiso `android.permission.CAMERA` en
 `src-tauri/gen/android/app/src/main/AndroidManifest.xml` para poder hacer fotos desde el selector.
 
+### Firma
+El fichero de propiedades va en `~/.android/catpresupuesto-keystore.properties` con las claves `password`, `keyAlias` y `storeFile` (ruta absoluta del `.jks`).
+Como alternativa, la variable de entorno `CATPRESUPUESTO_KEYSTORE_PROPERTIES` puede apuntar a otro fichero de propiedades.
+Sin ningún fichero el build no falla y el APK release sale sin firmar.
+El `.jks` y su contraseña deben respaldarse fuera del repo, porque sin ellos no se pueden publicar actualizaciones que se instalen encima.
+
 ## Estructura de carpetas
 
 - `src/api/`: tipos y cliente tipado de los comandos Tauri.

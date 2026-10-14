@@ -175,7 +175,7 @@ export function EntrySheet(props: {
           action={
             <Button
               onClick={() => {
-                navigate('/cuentas');
+                window.addEventListener('popstate', () => navigate('/cuentas', { replace: true }), { once: true });
                 onClose();
               }}
             >

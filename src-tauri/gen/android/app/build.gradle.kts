@@ -1,3 +1,4 @@
+import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -25,10 +26,18 @@ android {
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
-    val keystorePropertiesFile = rootProject.file("keystore.properties")
-    if (keystorePropertiesFile.exists()) {
+    val envKeystorePath: String? = System.getenv("CATPRESUPUESTO_KEYSTORE_PROPERTIES")
+    var keystorePropertiesFile: File? = null
+    if (envKeystorePath != null && File(envKeystorePath).exists()) {
+        keystorePropertiesFile = File(envKeystorePath)
+    } else if (rootProject.file("keystore.properties").exists()) {
+        keystorePropertiesFile = rootProject.file("keystore.properties")
+    } else if (File(File(System.getProperty("user.home"), ".android"), "catpresupuesto-keystore.properties").exists()) {
+        keystorePropertiesFile = File(File(System.getProperty("user.home"), ".android"), "catpresupuesto-keystore.properties")
+    }
+    if (keystorePropertiesFile != null) {
         val keystoreProperties = Properties().apply {
-            FileInputStream(keystorePropertiesFile).use { load(it) }
+            FileInputStream(keystorePropertiesFile).use { stream -> load(stream) }
         }
         signingConfigs {
             create("release") {
@@ -53,7 +62,7 @@ android {
             }
         }
         getByName("release") {
-            if (keystorePropertiesFile.exists()) {
+            if (keystorePropertiesFile != null) {
                 signingConfig = signingConfigs.getByName("release")
             }
             optimization {

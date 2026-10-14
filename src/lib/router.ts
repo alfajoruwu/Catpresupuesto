@@ -4,10 +4,16 @@ export interface Route {
   segments: string[];
 }
 
+let cachedHash: string | null = null;
+let cachedRoute: Route | null = null;
+
 function readRoute(): Route {
-  const hash = window.location.hash.replace(/^#/, '');
-  const segments = hash.split('/').filter((s) => s.length > 0);
-  return { segments: segments.length === 0 ? ['home'] : segments };
+  const raw = window.location.hash;
+  if (cachedRoute !== null && raw === cachedHash) return cachedRoute;
+  const segments = raw.replace(/^#/, '').split('/').filter((s) => s.length > 0);
+  cachedHash = raw;
+  cachedRoute = { segments: segments.length === 0 ? ['home'] : segments };
+  return cachedRoute;
 }
 
 const listeners = new Set<() => void>();

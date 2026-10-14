@@ -7,6 +7,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.mv-header-actions .app-btn {
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
 }
 
 .mv-section {

@@ -19,7 +19,7 @@ pub fn list_categories(
         .to_string();
     let mut stmt = conn.prepare(&sql)?;
     let rows = stmt.query_map(
-        rusqlite::params![user_id, filter, include_archived as i64],
+        rusqlite::params![user_id, filter, filter, include_archived as i64],
         |r| {
             let t: String = r.get(2)?;
             Ok(Category {
