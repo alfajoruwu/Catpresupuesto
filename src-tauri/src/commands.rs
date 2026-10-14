@@ -90,7 +90,9 @@ pub async fn register(state: State<'_, AppState>, input: RegisterInput) -> Resul
             .conn
             .lock()
             .map_err(|_| "No se pudo acceder a la base de datos".to_string())?;
-        auth::register(&conn, &input.username, &input.password).map_err(|e| e.0)?
+        let user = auth::register(&conn, &input.username, &input.password).map_err(|e| e.0)?;
+        auth::save_session(&conn, Some(user.id)).map_err(|e| e.0)?;
+        user
     };
     *state
         .user_id
@@ -106,7 +108,9 @@ pub async fn login(state: State<'_, AppState>, input: LoginInput) -> Result<User
             .conn
             .lock()
             .map_err(|_| "No se pudo acceder a la base de datos".to_string())?;
-        auth::login(&conn, &input.username, &input.password).map_err(|e| e.0)?
+        let user = auth::login(&conn, &input.username, &input.password).map_err(|e| e.0)?;
+        auth::save_session(&conn, Some(user.id)).map_err(|e| e.0)?;
+        user
     };
     *state
         .user_id
@@ -117,6 +121,13 @@ pub async fn login(state: State<'_, AppState>, input: LoginInput) -> Result<User
 
 #[tauri::command]
 pub async fn logout(state: State<'_, AppState>) -> Result<(), String> {
+    {
+        let conn = state
+            .conn
+            .lock()
+            .map_err(|_| "No se pudo acceder a la base de datos".to_string())?;
+        auth::save_session(&conn, None).map_err(|e| e.0)?;
+    }
     *state
         .user_id
         .lock()
@@ -453,8 +464,9 @@ pub fn open_state(app_data_dir: &std::path::Path) -> Result<AppState, String> {
         .map_err(|e| format!("No se pudo crear la carpeta de datos: {e}"))?;
     let db_path = app_data_dir.join("catpresupuesto.sqlite3");
     let conn = db::open_database(&db_path).map_err(|e| e.0)?;
+    let user_id = auth::saved_session(&conn).map_err(|e| e.0)?;
     Ok(AppState {
         conn: Mutex::new(conn),
-        user_id: Mutex::new(None),
+        user_id: Mutex::new(user_id),
     })
 }

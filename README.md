@@ -21,7 +21,9 @@ App de finanzas personales para Android, con Tauri 2. Importes enteros en pesos 
 6. `npm run tauri android build -- --apk`
 
 Nota: tras init, añade el permiso `android.permission.CAMERA` en
-`src-tauri/gen/android/app/src/main/AndroidManifest.xml` para poder hacer fotos desde el selector.
+`src-tauri/gen/android/app/src/main/AndroidManifest.xml`: el escaneo de boletas abre la cámara
+dentro de la app (`getUserMedia`) para que Android no cierre la app mientras se saca la foto.
+La sesión iniciada se guarda en la base de datos y se mantiene hasta pulsar "Cerrar sesión".
 
 ### Firma
 El fichero de propiedades va en `~/.android/catpresupuesto-keystore.properties` con las claves `password`, `keyAlias` y `storeFile` (ruta absoluta del `.jks`).

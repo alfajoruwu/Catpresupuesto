@@ -236,7 +236,7 @@ pub fn list_recurring(
         "SELECT id FROM recurring_rules WHERE user_id = ? AND (? IS NULL OR kind = ?) ORDER BY name COLLATE NOCASE",
     )?;
     let ids: Vec<i64> = stmt
-        .query_map(rusqlite::params![user_id, filter], |r| r.get(0))?
+        .query_map(rusqlite::params![user_id, filter, filter], |r| r.get(0))?
         .collect::<rusqlite::Result<_>>()?;
     ids.into_iter()
         .map(|id| rule_view(conn, &read_rule(conn, user_id, id)?, today))

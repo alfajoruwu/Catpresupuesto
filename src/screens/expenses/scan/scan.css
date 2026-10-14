@@ -4,6 +4,21 @@
   gap: var(--space-3);
 }
 
+.scan-camera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.scan-camera__video {
+  display: block;
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
 .scan-hint {
   color: var(--text-muted);
   font-size: 13px;

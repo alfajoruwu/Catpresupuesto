@@ -113,6 +113,25 @@ pub fn auth_status(conn: &Connection, session_user_id: Option<i64>) -> Result<Au
     })
 }
 
+/// Usuario de la sesión guardada, si hay una.
+pub fn saved_session(conn: &Connection) -> Result<Option<i64>, AppError> {
+    Ok(conn
+        .query_row("SELECT user_id FROM session WHERE id = 1", [], |r| r.get(0))
+        .optional()?)
+}
+
+/// Guarda (`Some`) o borra (`None`) la sesión iniciada.
+pub fn save_session(conn: &Connection, user_id: Option<i64>) -> Result<(), AppError> {
+    match user_id {
+        Some(id) => conn.execute(
+            "INSERT OR REPLACE INTO session (id, user_id) VALUES (1, ?)",
+            [id],
+        )?,
+        None => conn.execute("DELETE FROM session", [])?,
+    };
+    Ok(())
+}
+
 pub fn set_onboarding_done(
     conn: &Connection,
     user_id: i64,

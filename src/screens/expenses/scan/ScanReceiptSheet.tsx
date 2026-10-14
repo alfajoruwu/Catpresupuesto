@@ -16,9 +16,10 @@ import {
   TextField,
   toast,
 } from '../../../ui';
+import { CameraCapture } from './CameraCapture';
 import './scan.css';
 
-type ScanState = 'pick' | 'scanning' | 'review' | 'error';
+type ScanState = 'pick' | 'camera' | 'scanning' | 'review' | 'error';
 
 const STAGES: { id: ScanStage; label: string }[] = [
   { id: 'preparing', label: 'Preparando imagen' },
@@ -139,6 +140,17 @@ export function ScanReceiptSheet(props: { open: boolean; onClose(): void }): Rea
     if (file !== undefined) void startScan(file);
   }
 
+  function openCamera(): void {
+    // Sin getUserMedia (p. ej. escritorio), se usa el selector de archivos con captura.
+    if (typeof navigator.mediaDevices?.getUserMedia === 'function') setState('camera');
+    else cameraRef.current?.click();
+  }
+
+  function showCameraError(message: string): void {
+    setScanError(message);
+    setState('error');
+  }
+
   async function handleSave(): Promise<void> {
     if (receipt === null) return;
     if (amount <= 0) {
@@ -200,7 +212,7 @@ export function ScanReceiptSheet(props: { open: boolean; onClose(): void }): Rea
     >
       {state === 'pick' ? (
         <div className="scan-pick">
-          <Button block onClick={() => cameraRef.current?.click()}>
+          <Button block onClick={openCamera}>
             <Camera size={20} />
             Tomar foto
           </Button>
@@ -212,6 +224,13 @@ export function ScanReceiptSheet(props: { open: boolean; onClose(): void }): Rea
             Encuadra la boleta completa, con buena luz. Si tiene código (timbre o QR), inclúyelo.
           </p>
         </div>
+      ) : null}
+      {state === 'camera' ? (
+        <CameraCapture
+          onCapture={(file) => void startScan(file)}
+          onCancel={resetToPick}
+          onError={showCameraError}
+        />
       ) : null}
       {state === 'scanning' ? (
         <div className="scan-scanning">

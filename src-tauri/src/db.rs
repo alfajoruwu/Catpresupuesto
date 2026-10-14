@@ -80,6 +80,15 @@ CREATE TABLE budgets (
 );
 ";
 
+/// Sesión iniciada: a lo sumo una fila. Se guarda en la BD para que Android pueda cerrar el
+/// proceso (por ejemplo, mientras la app está en segundo plano) sin cerrar la sesión.
+const SCHEMA_V2: &str = "
+CREATE TABLE session (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+";
+
 pub fn open_database(path: &std::path::Path) -> Result<Connection, AppError> {
     let conn = Connection::open(path)?;
     configure(&conn)?;
@@ -97,6 +106,10 @@ pub fn run_migrations(conn: &Connection) -> Result<(), AppError> {
     if version < 1 {
         conn.execute_batch(SCHEMA_V1)?;
         conn.execute_batch("PRAGMA user_version = 1")?;
+    }
+    if version < 2 {
+        conn.execute_batch(SCHEMA_V2)?;
+        conn.execute_batch("PRAGMA user_version = 2")?;
     }
     Ok(())
 }

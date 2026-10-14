@@ -338,6 +338,26 @@ fn auth_login_y_reset_basicos() {
 }
 
 #[test]
+fn sesion_sobrevive_al_reabrir_la_base() {
+    let dir = std::env::temp_dir().join(format!("catpresupuesto-sesion-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("db.sqlite3");
+    let reopen = || crate::db::open_database(&path).unwrap();
+    let conn = reopen();
+    assert_eq!(auth::saved_session(&conn).unwrap(), None);
+    let uid = auth::register(&conn, "ana", "pass1234").unwrap().id;
+    auth::save_session(&conn, Some(uid)).unwrap();
+    drop(conn);
+    let conn = reopen();
+    assert_eq!(auth::saved_session(&conn).unwrap(), Some(uid));
+    auth::save_session(&conn, None).unwrap();
+    drop(conn);
+    assert_eq!(auth::saved_session(&reopen()).unwrap(), None);
+    std::fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
 fn bordes_contrato_recibo_update_delete_filtros() {
     use crate::recurring::RuleInput;
     let mut conn = memory_db().unwrap();
@@ -376,5 +396,23 @@ fn bordes_contrato_recibo_update_delete_filtros() {
     // adjust sin saldo inicial previo: openingBalance 0 no crea asiento
     let n: i64 = conn.query_row("SELECT COUNT(*) FROM entries WHERE kind='opening'", [], |x| x.get(0)).unwrap();
     assert_eq!(n, 0);
+}
+
+#[test]
+fn list_recurring_filtra_por_tipo() {
+    use crate::recurring::RuleInput;
+    let mut conn = memory_db().unwrap();
+    let uid = seed_user(&conn, "recurrentes");
+    let inc = categories::create_category(&conn, uid, "Sueldo", CategoryKind::Income, "#00AA00").unwrap().id;
+    let exp = categories::create_category(&conn, uid, "Arriendo", CategoryKind::Expense, "#FF0000").unwrap().id;
+    let acc = accounts::create_account(&mut conn, uid, "Vista", AccountKind::Vista, 0, "2026-01-01").unwrap().id;
+    recurring::create_recurring(&mut conn, uid, RuleInput { kind: CategoryKind::Income, name: "Sueldo", amount: 1000, category_id: inc, account_id: acc, interval_months: 1, day_of_month: 5, start_date: "2026-01-05", end_date: None, bonus_every_months: None, bonus_percent: None }, "2026-01-01").unwrap();
+    recurring::create_recurring(&mut conn, uid, RuleInput { kind: CategoryKind::Expense, name: "Arriendo", amount: 500, category_id: exp, account_id: acc, interval_months: 1, day_of_month: 5, start_date: "2026-01-05", end_date: None, bonus_every_months: None, bonus_percent: None }, "2026-01-01").unwrap();
+    let names = |kind| -> Vec<String> {
+        recurring::list_recurring(&conn, uid, kind, "2026-01-01").unwrap().into_iter().map(|r| r.name).collect()
+    };
+    assert_eq!(names(Some(CategoryKind::Income)), ["Sueldo"]);
+    assert_eq!(names(Some(CategoryKind::Expense)), ["Arriendo"]);
+    assert_eq!(names(None), ["Arriendo", "Sueldo"]);
 }
 
