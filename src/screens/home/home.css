@@ -8,6 +8,11 @@
   gap: var(--space-4);
 }
 
+.hm-header-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
 .hm-card-title {
   font-size: 14px;
   font-weight: 600;

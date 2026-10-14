@@ -23,7 +23,7 @@ export function AccountsScreen(): ReactNode {
       <ScreenHeader
         title="Cuentas"
         actions={
-          <Button onClick={() => setFormOpen(true)}>
+          <Button onClick={() => setFormOpen(true)} data-tour="accounts-new">
             <Plus size={20} strokeWidth={1.75} />
             Nueva
           </Button>

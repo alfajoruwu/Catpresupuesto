@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { CircleAlert, CircleCheck, LogOut, TriangleAlert } from 'lucide-react';
+import { CircleAlert, CircleCheck, CircleHelp, LogOut, TriangleAlert } from 'lucide-react';
 import { api } from '../../api/client';
 import type { Entry } from '../../api/types';
 import { useQuery } from '../../lib/data';
@@ -8,6 +8,7 @@ import { currentMonth, shortDate, todayISO } from '../../lib/dates';
 import { formatMoney, formatPercent } from '../../lib/format';
 import { navigate } from '../../lib/router';
 import { useSession } from '../../lib/session';
+import { useStartTour } from '../../onboarding/Tour';
 import {
   Amount,
   Button,
@@ -57,6 +58,7 @@ function entryValue(e: Entry): ReactNode {
 export function HomeScreen(): ReactNode {
   const { logout } = useSession();
   const [confirming, setConfirming] = useState(false);
+  const startTour = useStartTour();
   const [month, setMonth] = useState(currentMonth);
   const today = todayISO();
 
@@ -71,9 +73,14 @@ export function HomeScreen(): ReactNode {
     <ScreenHeader
       title="Resumen"
       actions={
-        <IconButton label="Cerrar sesión" onClick={() => setConfirming(true)}>
-          <LogOut size={24} />
-        </IconButton>
+        <span className="hm-header-actions">
+          <IconButton label="Ver recorrido" onClick={startTour}>
+            <CircleHelp size={24} />
+          </IconButton>
+          <IconButton label="Cerrar sesión" onClick={() => setConfirming(true)}>
+            <LogOut size={24} />
+          </IconButton>
+        </span>
       }
     />
   );
@@ -116,7 +123,7 @@ export function HomeScreen(): ReactNode {
       {header}
       <MonthSwitcher month={month} onChange={setMonth} />
 
-      <Card>
+      <Card tour="home-summary">
         <h2 className="hm-card-title">Disponible del mes</h2>
         <Amount
           value={stats.available}

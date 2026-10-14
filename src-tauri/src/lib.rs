@@ -36,7 +36,6 @@ pub fn run() {
             commands::login,
             commands::logout,
             commands::set_onboarding_done,
-            commands::reset_user_data,
             commands::list_categories,
             commands::create_category,
             commands::update_category,

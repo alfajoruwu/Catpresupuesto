@@ -59,6 +59,10 @@ export function RecurringSheet(props: {
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [nameError, setNameError] = useState<string | undefined>(undefined);
+  const [amountError, setAmountError] = useState<string | undefined>(undefined);
+  const [categoryError, setCategoryError] = useState<string | undefined>(undefined);
+  const [accountError, setAccountError] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (!open) return;
     const initial = rule?.intervalMonths ?? 1;
@@ -77,6 +81,10 @@ export function RecurringSheet(props: {
     setBonusMonths(rule?.bonusEveryMonths != null ? String(rule.bonusEveryMonths) : '3');
     setBonusPercent(rule?.bonusPercent != null ? String(rule.bonusPercent) : '50');
     setConfirmingDelete(false);
+    setNameError(undefined);
+    setAmountError(undefined);
+    setCategoryError(undefined);
+    setAccountError(undefined);
   }, [open, rule, isIncome]);
 
   useEffect(() => {
@@ -93,6 +101,19 @@ export function RecurringSheet(props: {
   const bonusAmount = Math.round((amount * bonusPct) / 100);
 
   async function handleSave(): Promise<void> {
+    const nError = name.trim() === '' ? 'Ponle un nombre' : undefined;
+    const aError = amount <= 0 ? 'Ingresa un monto' : undefined;
+    const cError = categoryId === null ? 'Elige una categoría' : undefined;
+    const accError = accountId === null ? 'Elige una cuenta' : undefined;
+    setNameError(nError);
+    setAmountError(aError);
+    setCategoryError(cError);
+    setAccountError(accError);
+    if (nError !== undefined || aError !== undefined || cError !== undefined || accError !== undefined) {
+      // El formulario es largo: el aviso marcado puede quedar fuera de la vista.
+      toast('Completa los campos marcados', 'error');
+      return;
+    }
     const payload = {
       kind,
       name: name.trim(),
@@ -165,10 +186,22 @@ export function RecurringSheet(props: {
           <TextField
             label="Nombre"
             value={name}
-            onChange={setName}
+            onChange={(v) => {
+              setName(v);
+              setNameError(undefined);
+            }}
             placeholder={isIncome ? 'Sueldo' : 'Arriendo'}
+            error={nameError}
           />
-          <MoneyField label="Monto" value={amount} onChange={setAmount} />
+          <MoneyField
+            label="Monto"
+            value={amount}
+            onChange={(n) => {
+              setAmount(n);
+              setAmountError(undefined);
+            }}
+            error={amountError}
+          />
           <span className="mv-picker__label">Frecuencia</span>
           <Segmented<Freq>
             value={freq}
@@ -208,7 +241,15 @@ export function RecurringSheet(props: {
             Tiene fecha de término
           </label>
           {hasEnd ? <DateField label="Hasta" value={endDate} onChange={setEndDate} /> : null}
-          <CategoryPicker kind={kind} value={categoryId} onChange={setCategoryId} />
+          <CategoryPicker
+            kind={kind}
+            value={categoryId}
+            onChange={(id) => {
+              setCategoryId(id);
+              setCategoryError(undefined);
+            }}
+          />
+          {categoryError ? <div className="mv-error">{categoryError}</div> : null}
           <SelectField<number>
             label={isIncome ? 'Cuenta de destino' : 'Pagado desde'}
             value={accountId}
@@ -216,8 +257,12 @@ export function RecurringSheet(props: {
               value: a.id,
               label: `${a.name} · ${formatMoney(a.balance)}`,
             }))}
-            onChange={setAccountId}
+            onChange={(v) => {
+              setAccountId(v);
+              setAccountError(undefined);
+            }}
           />
+          {accountError ? <div className="mv-error">{accountError}</div> : null}
           {isIncome ? (
             <>
               <label className="mv-check">

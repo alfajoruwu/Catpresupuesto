@@ -419,10 +419,16 @@ export function EmptyState(props: {
   );
 }
 
-export function Card(props: { children: ReactNode; padding?: number | string }): ReactNode {
+export function Card(props: {
+  children: ReactNode;
+  padding?: number | string;
+  /** Marca el elemento para el recorrido inicial (`data-tour`). */
+  tour?: string;
+}): ReactNode {
   return (
     <div
       className="app-card"
+      data-tour={props.tour}
       style={props.padding !== undefined ? { padding: props.padding } : undefined}
     >
       {props.children}

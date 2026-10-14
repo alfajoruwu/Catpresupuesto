@@ -113,7 +113,7 @@ export function MovementsScreen(props: { kind: 'income' | 'expense'; extraAction
         actions={
           <span className="mv-header-actions">
             {extraActions}
-            <Button onClick={openNew}>
+            <Button onClick={openNew} data-tour="mv-new">
               <Plus size={20} strokeWidth={1.75} />
               Nuevo
             </Button>
@@ -135,7 +135,7 @@ export function MovementsScreen(props: { kind: 'income' | 'expense'; extraAction
           ) : null}
         </Card>
       </div>
-      <div className="mv-section">
+      <div className="mv-section" data-tour="mv-tabs">
         <Segmented<Tab>
           value={tab}
           options={[

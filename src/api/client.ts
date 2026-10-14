@@ -42,7 +42,18 @@ async function call<T>(cmd: string, input?: unknown): Promise<T> {
   try {
     return await invoke<T>(cmd, input === undefined ? undefined : { input });
   } catch (e: unknown) {
-    throw new ApiError(typeof e === 'string' ? e : String(e));
+    const raw = typeof e === 'string' ? e : String(e);
+    // Los errores de validación del backend ya vienen redactados para el usuario; los técnicos
+    // (argumentos que Tauri no pudo leer, fallos de SQLite) se reemplazan por un mensaje claro.
+    if (raw.startsWith('invalid args') || raw.startsWith('Error de base de datos')) {
+      console.error(`${cmd}: ${raw}`);
+      throw new ApiError(
+        raw.startsWith('invalid args')
+          ? 'Faltan datos por completar. Revisa el formulario.'
+          : 'Hubo un problema con los datos. Inténtalo de nuevo.',
+      );
+    }
+    throw new ApiError(raw);
   }
 }
 
@@ -61,9 +72,6 @@ export const api = {
   },
   setOnboardingDone(input: SetOnboardingDoneInput): Promise<User> {
     return call<User>('set_onboarding_done', input);
-  },
-  resetUserData(): Promise<null> {
-    return call<null>('reset_user_data');
   },
   listCategories(input: ListCategoriesInput): Promise<Category[]> {
     return call<Category[]>('list_categories', input);

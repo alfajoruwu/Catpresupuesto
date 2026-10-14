@@ -149,20 +149,6 @@ pub fn set_onboarding_done(
     Ok(user)
 }
 
-/// Borra movimientos, reglas, presupuestos y cuentas no sistémicas del usuario.
-pub fn reset_user_data(conn: &mut Connection, user_id: i64) -> Result<(), AppError> {
-    let tx = conn.transaction()?;
-    tx.execute("DELETE FROM entries WHERE user_id = ?", [user_id])?;
-    tx.execute("DELETE FROM recurring_rules WHERE user_id = ?", [user_id])?;
-    tx.execute("DELETE FROM budgets WHERE user_id = ?", [user_id])?;
-    tx.execute(
-        "DELETE FROM ledger_accounts WHERE user_id = ? AND is_system = 0",
-        [user_id],
-    )?;
-    tx.commit()?;
-    Ok(())
-}
-
 /// Id del ledger sistémico 'Patrimonio inicial' del usuario.
 pub fn equity_account(conn: &Connection, user_id: i64) -> Result<i64, AppError> {
     conn.query_row(
@@ -186,25 +172,5 @@ mod tests {
         assert!(login(&conn, "JUAN", "clave1234").is_ok());
         let dup = register(&conn, "JUAN", "clave1234");
         assert_eq!(dup.unwrap_err().0, "Ese usuario ya existe");
-    }
-
-    #[test]
-    fn reset_deja_solo_patrimonio_inicial() {
-        let mut conn = memory_db().unwrap();
-        let uid = register(&conn, "ana", "clave1234").unwrap().id;
-        conn.execute(
-            "INSERT INTO ledger_accounts (user_id, name, type) VALUES (?, 'Sueldo', 'income')",
-            [uid],
-        )
-        .unwrap();
-        reset_user_data(&mut conn, uid).unwrap();
-        let names: Vec<String> = conn
-            .prepare("SELECT name FROM ledger_accounts WHERE user_id = ?")
-            .unwrap()
-            .query_map([uid], |r| r.get(0))
-            .unwrap()
-            .map(|r| r.unwrap())
-            .collect();
-        assert_eq!(names, vec!["Patrimonio inicial".to_string()]);
     }
 }

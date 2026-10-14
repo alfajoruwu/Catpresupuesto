@@ -9,7 +9,6 @@ import { todayISO } from './lib/dates';
 import type { User } from './api/types';
 import { AuthScreen } from './auth/AuthScreen';
 import { AppShell } from './shell/AppShell';
-import { Onboarding } from './onboarding/Onboarding';
 
 export function App(): ReactNode {
   const [status, setStatus] = useState<
@@ -64,7 +63,7 @@ export function App(): ReactNode {
           }
           logout={handleLogout}
         >
-          {status.user.onboardingDone ? <AppShell /> : <Onboarding />}
+          <AppShell />
         </SessionProvider>
       )}
       <ToastHost />

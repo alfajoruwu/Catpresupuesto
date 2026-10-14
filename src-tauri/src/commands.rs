@@ -145,11 +145,6 @@ pub async fn set_onboarding_done(
     })
 }
 
-#[tauri::command]
-pub async fn reset_user_data(state: State<'_, AppState>) -> Result<(), String> {
-    run(&state, auth::reset_user_data)
-}
-
 // ---------- Categorías ----------
 
 #[tauri::command]

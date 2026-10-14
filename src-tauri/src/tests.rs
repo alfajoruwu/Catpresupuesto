@@ -320,21 +320,12 @@ fn ocurrencia_futura_cuenta_en_projected() {
 }
 
 #[test]
-fn auth_login_y_reset_basicos() {
-    let mut conn = memory_db().unwrap();
+fn auth_login_basico() {
+    let conn = memory_db().unwrap();
     let uid = auth::register(&conn, "carlos", "pass1234").unwrap().id;
     assert!(auth::login(&conn, "carlos", "mal").is_err());
     let st = auth::auth_status(&conn, Some(uid)).unwrap();
     assert!(st.has_users && st.user.is_some());
-    auth::reset_user_data(&mut conn, uid).unwrap();
-    let n: i64 = conn
-        .query_row(
-            "SELECT COUNT(*) FROM ledger_accounts WHERE user_id = ?",
-            [uid],
-            |r| r.get(0),
-        )
-        .unwrap();
-    assert_eq!(n, 1);
 }
 
 #[test]

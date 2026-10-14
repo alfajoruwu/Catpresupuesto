@@ -129,7 +129,7 @@ export function BudgetScreen(): ReactNode {
                 </button>
               </Card>
             ))}
-            <Button block onClick={() => setCreateOpen(true)}>
+            <Button block onClick={() => setCreateOpen(true)} data-tour="budget-assign">
               <Plus size={20} strokeWidth={1.75} />
               Asignar fondo
             </Button>
@@ -139,7 +139,7 @@ export function BudgetScreen(): ReactNode {
             title={`Sin presupuesto en ${monthLabel(month)}`}
             text="Asigna un monto mensual a cada categoría de gasto."
             action={
-              <Button onClick={() => setCreateOpen(true)}>
+              <Button onClick={() => setCreateOpen(true)} data-tour="budget-assign">
                 <Plus size={20} strokeWidth={1.75} />
                 Asignar fondo
               </Button>

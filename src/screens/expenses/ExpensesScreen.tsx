@@ -12,7 +12,7 @@ export function ExpensesScreen(): ReactNode {
       <MovementsScreen
         kind="expense"
         extraActions={
-          <Button variant="secondary" onClick={() => setScanOpen(true)}>
+          <Button variant="secondary" onClick={() => setScanOpen(true)} data-tour="scan">
             <ScanLine size={20} strokeWidth={1.75} />
             Escanear
           </Button>
