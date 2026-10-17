@@ -8,6 +8,11 @@
   gap: var(--space-4);
 }
 
+/* La cabecera ya trae su propio padding: anula el del contenedor y el gap. */
+.hm-screen > .app-screen-header {
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) calc(-1 * var(--space-4));
+}
+
 .hm-header-actions {
   display: flex;
   gap: var(--space-1);
