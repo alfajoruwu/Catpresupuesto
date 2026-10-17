@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { addMonths, monthLabel } from '../lib/dates';
+import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { addMonths, currentMonth, MONTH_NAMES, monthLabel } from '../lib/dates';
 import { formatMoney } from '../lib/format';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -386,6 +386,65 @@ export function MonthSwitcher(props: {
   month: string;
   onChange(month: string): void;
 }): ReactNode {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerYear, setPickerYear] = useState(() => Number(props.month.slice(0, 4)));
+  const monthRef = useRef(props.month);
+  monthRef.current = props.month;
+  const onChangeRef = useRef(props.onChange);
+  onChangeRef.current = props.onChange;
+
+  useEffect(() => {
+    let start: { x: number; y: number; t: number } | null = null;
+    function onTouchStart(e: TouchEvent): void {
+      if (e.touches.length !== 1) {
+        start = null;
+        return;
+      }
+      const target = e.target;
+      if (
+        target instanceof Element &&
+        target.closest('.app-sheet, .app-dialog-backdrop, .tour, .app-bottom-nav, input, select, textarea') !== null
+      ) {
+        start = null;
+        return;
+      }
+      const touch = e.touches[0];
+      start = { x: touch.clientX, y: touch.clientY, t: Date.now() };
+    }
+    function onTouchEnd(e: TouchEvent): void {
+      if (start === null) return;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      const dt = Date.now() - start.t;
+      start = null;
+      if (Math.abs(dx) >= 60 && Math.abs(dx) > 1.5 * Math.abs(dy) && dt <= 700) {
+        onChangeRef.current(addMonths(monthRef.current, dx < 0 ? 1 : -1));
+      }
+    }
+    function onTouchCancel(): void {
+      start = null;
+    }
+    document.addEventListener('touchstart', onTouchStart, { passive: true });
+    document.addEventListener('touchend', onTouchEnd, { passive: true });
+    document.addEventListener('touchcancel', onTouchCancel, { passive: true });
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('touchcancel', onTouchCancel);
+    };
+  }, []);
+
+  function pick(value: string): void {
+    setPickerOpen(false);
+    if (value !== props.month) props.onChange(value);
+  }
+
+  function openPicker(): void {
+    setPickerYear(Number(props.month.slice(0, 4)));
+    setPickerOpen(true);
+  }
+
   return (
     <div className="app-month-switcher">
       <IconButton
@@ -394,13 +453,61 @@ export function MonthSwitcher(props: {
       >
         <ChevronLeft size={24} />
       </IconButton>
-      <span className="app-month-switcher__label">{monthLabel(props.month)}</span>
+      <button
+        type="button"
+        className="app-month-switcher__label"
+        aria-haspopup="dialog"
+        onClick={openPicker}
+      >
+        {monthLabel(props.month)}
+        <ChevronDown size={16} />
+      </button>
       <IconButton
         label="Mes siguiente"
         onClick={() => props.onChange(addMonths(props.month, 1))}
       >
         <ChevronRight size={24} />
       </IconButton>
+      <Sheet
+        open={pickerOpen}
+        title="Elegir mes"
+        onClose={() => setPickerOpen(false)}
+        footer={
+          <Button variant="secondary" block onClick={() => pick(currentMonth())}>
+            Ir al mes actual
+          </Button>
+        }
+      >
+        <div className="app-month-picker__year">
+          <IconButton label="Año anterior" onClick={() => setPickerYear((y) => y - 1)}>
+            <ChevronLeft size={24} />
+          </IconButton>
+          <span className="app-month-picker__year-label">{pickerYear}</span>
+          <IconButton label="Año siguiente" onClick={() => setPickerYear((y) => y + 1)}>
+            <ChevronRight size={24} />
+          </IconButton>
+        </div>
+        <div className="app-month-picker__grid">
+          {MONTH_NAMES.map((name, i) => {
+            const value = `${pickerYear}-${String(i + 1).padStart(2, '0')}`;
+            const className =
+              'app-month-picker__month' +
+              (value === props.month ? ' is-active' : '') +
+              (value === currentMonth() ? ' is-current' : '');
+            return (
+              <button
+                type="button"
+                key={value}
+                className={className}
+                aria-pressed={value === props.month}
+                onClick={() => pick(value)}
+              >
+                {name}
+              </button>
+            );
+          })}
+        </div>
+      </Sheet>
     </div>
   );
 }
