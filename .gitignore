@@ -1,6 +1,4 @@
 node_modules
 dist
-public/models/
-public/ort/
 *.log
 .DS_Store

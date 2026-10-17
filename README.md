@@ -12,17 +12,11 @@ App de finanzas personales para Android, con Tauri 2. Importes enteros en pesos 
 ## Pasos
 
 1. `npm install`
-2. `npm run setup:ocr`: descarga los modelos PaddleOCR PP-OCRv5 móvil (detección y
-   reconocimiento en ONNX, unos 21 MB, más el diccionario de caracteres v5) a `public/models`
-   y copia el runtime WASM de onnxruntime a `public/ort`; es obligatorio antes de dev o build.
-3. `npm run tauri dev` para escritorio.
-4. `npm run tauri android init` una sola vez.
-5. `npm run tauri android dev`
-6. `npm run tauri android build -- --apk`
+2. `npm run tauri dev` para escritorio.
+3. `npm run tauri android init` una sola vez.
+4. `npm run tauri android dev`
+5. `npm run tauri android build -- --apk`
 
-Nota: tras init, añade el permiso `android.permission.CAMERA` en
-`src-tauri/gen/android/app/src/main/AndroidManifest.xml`: el escaneo de boletas abre la cámara
-dentro de la app (`getUserMedia`) para que Android no cierre la app mientras se saca la foto.
 La sesión iniciada se guarda en la base de datos y se mantiene hasta pulsar "Cerrar sesión".
 
 ### Firma
@@ -36,14 +30,12 @@ El `.jks` y su contraseña deben respaldarse fuera del repo, porque sin ellos no
 - `src/api/`: tipos y cliente tipado de los comandos Tauri.
 - `src/auth/`: pantalla de inicio de sesión y creación de usuario.
 - `src/lib/`: utilidades (formato, fechas, router por hash, consultas, sesión).
-- `src/ocr/`: módulo local de lectura de boletas (PaddleOCR + zxing + reglas de texto).
 - `src/onboarding/`: recorrido inicial.
 - `src/screens/`: pantallas (home, ingresos, gastos, presupuesto, cuentas).
 - `src/shell/`: estructura principal y barra inferior.
 - `src/styles/`: tokens de diseño y base.
 - `src/ui/`: componentes de interfaz.
 - `src-tauri/`: backend Rust con contabilidad de partida doble.
-- `scripts/setup-ocr-assets.mjs`: descarga de modelos OCR y runtime WASM.
 
 ## Modelo contable
 

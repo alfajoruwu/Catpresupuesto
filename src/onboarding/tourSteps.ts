@@ -40,9 +40,9 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     route: '/gastos',
-    target: '[data-tour="scan"]',
-    title: 'Escanea tus boletas',
-    text: 'Saca una foto a la boleta y la app completa el monto y la fecha por ti.',
+    target: '.app-month-switcher',
+    title: 'Cambia de mes',
+    text: 'Desliza el dedo a los lados para pasar de un mes a otro, o toca el mes para elegir cualquiera.',
   },
   {
     route: '/presupuesto',

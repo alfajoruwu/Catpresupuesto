@@ -57,8 +57,8 @@ function recurringSubtitle(
   return lines.join('\n');
 }
 
-export function MovementsScreen(props: { kind: 'income' | 'expense'; extraActions?: ReactNode }): ReactNode {
-  const { kind, extraActions } = props;
+export function MovementsScreen(props: { kind: 'income' | 'expense' }): ReactNode {
+  const { kind } = props;
   const isIncome = kind === 'income';
   const title = isIncome ? 'Ingresos' : 'Gastos';
   const tone = isIncome ? 'income' : 'expense';
@@ -112,7 +112,6 @@ export function MovementsScreen(props: { kind: 'income' | 'expense'; extraAction
         title={title}
         actions={
           <span className="mv-header-actions">
-            {extraActions}
             <Button onClick={openNew} data-tour="mv-new">
               <Plus size={20} strokeWidth={1.75} />
               Nuevo

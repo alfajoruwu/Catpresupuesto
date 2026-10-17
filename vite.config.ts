@@ -15,6 +15,5 @@ export default defineConfig({
   },
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   build: { target: 'chrome105' },
-  optimizeDeps: { exclude: ['onnxruntime-web'] },
   test: { environment: 'node', include: ['src/**/*.test.ts'] },
 });
