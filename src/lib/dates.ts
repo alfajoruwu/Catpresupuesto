@@ -30,7 +30,7 @@ export function daysInMonth(month: string): number {
   return new Date(year, m, 0).getDate();
 }
 
-const MONTH_NAMES = [
+export const MONTH_NAMES = [
   'Enero',
   'Febrero',
   'Marzo',
