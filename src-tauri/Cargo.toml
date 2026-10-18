@@ -8,7 +8,7 @@ name = "catpresupuesto_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [dependencies]
-tauri = "2"
+tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 rusqlite = { version = "0.32", features = ["bundled"] }
@@ -17,4 +17,4 @@ rand_core = { version = "0.6", features = ["getrandom"] }
 chrono = "0.4"
 
 [build-dependencies]
-tauri-build = "2"
+tauri-build = { version = "2", features = [] }
